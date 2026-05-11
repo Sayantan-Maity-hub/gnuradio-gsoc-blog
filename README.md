@@ -1,0 +1,1 @@
+description: Weekly development diary for GNU Radio Hardware-in-the-Loop CI using CortexLab under Google Summer of Code 2026.
