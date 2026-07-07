@@ -280,35 +280,3 @@ FINISHED
 ## Estimated Effort
 
 **8–12 Hours**
-
----
-
-## Project Status
-
-✅ Controller–Runner communication
-
-✅ REST API using Flask
-
-✅ SSH communication using Paramiko
-
-✅ Reservation management
-
-✅ Automatic scenario generation
-
-✅ Task creation and submission
-
-✅ Live node discovery
-
-✅ Script upload through SFTP
-
-✅ Remote script execution
-
-✅ Execution monitoring backend
-
-⏳ Dashboard execution panel
-
-⏳ Execution log download
-
-⏳ Experiment state tracking
-
-⏳ Multi-node execution visualization
