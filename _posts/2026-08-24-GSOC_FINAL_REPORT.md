@@ -5,7 +5,7 @@
 **EMail:** [maitysayantan116@gmail.com]
 
 **Organization:** [GNU Radio]  
-**Mentor(s):** [Marcus Müller, Cyrille Morin]  
+**Mentor(s):** [Cyrille Morin, Marcus Müller]  
 **Project period:** June-August 2026  
 **Repository:** [GitHub Link](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop)
 
