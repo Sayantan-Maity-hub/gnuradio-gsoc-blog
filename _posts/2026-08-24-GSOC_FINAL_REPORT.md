@@ -4,7 +4,7 @@
 
 **EMail:** [maitysayantan116@gmail.com]
 
-**Organization:** [GNU Radio]   
+**Organization:** [GNU Radio]  
 **Mentor(s):** [Marcus Müller, Cyrille Morin]  
 **Project period:** June-August 2026  
 **Repository:** [GitHub Link](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop)
@@ -66,7 +66,7 @@ Relevant implementation: [`experiment_manager/start_experiment.py`](experiment_m
 Two example experiment families are included.
 
 - **Basic hardware test:** a transmitter and receiver run a tone-based SDR test. The analysis reads captured complex IQ samples, checks received sample count, finite samples, average signal power, and dominant-frequency error. It writes metrics such as RMS amplitude, frequency resolution, tolerance, and pass/fail checks to `results.json`.
-- **OFDM hardware test:** GNU Radio transmitter and receiver flowgraphs plus parameterized Python scripts exercise an OFDM payload path. The analysis compares the received binary payload with the expected UTF-8 message and reports byte-level diagnostics and a machine-readable verdict.
+- **OFDM hardware test:** GNU Radio transmitter and receiver flowgraphs, together with parameterized Python scripts, exercise an OFDM payload path. The analysis compares the received binary payload with the expected UTF-8 message and provides byte-level diagnostics and a machine-readable verdict. The experiment has been executed on CortexLab, but the expected payload is currently not being written to the output file and therefore requires further debugging.
 
 The accompanying `.grc` flowgraphs, node scripts, analysis scripts, and `parameter.json` files make these examples useful both as smoke tests and as templates for future experiments.
 
@@ -124,14 +124,11 @@ The OFDM test has also been executed on the hardware. Currently, there are no si
 
 Therefore, the `basic_hardware_test` is confirmed to be working successfully, while the OFDM test requires further debugging once the CortexLab issues are resolved. The next step is to continue investigating the OFDM RX/data path and verify why the received message is not being written to the output file.
 
-
 ## Challenges and Lessons Learned
 
 The main challenges were related to coordinating experiments across shared, remote CortexLab hardware. Reservation is asynchronous, so a submitted job does not immediately mean that the assigned nodes are ready for execution. I also faced issues with node connectivity through the gateway, file transfer, experiment execution, reservation monitoring, and synchronization between transmitter and receiver nodes. These issues highlighted the importance of handling reservation, node, and execution states explicitly and monitoring them throughout the experiment lifecycle.
 
 During development, I also encountered several integration and debugging issues, including Python import and packaging problems, Flask/controller endpoint issues, reservation-state handling, remote SSH connections, and MINUS task submission. Debugging the OFDM experiment was particularly challenging because the TX/RX flowgraph could execute without producing obvious runtime errors, while the expected received message was still missing from the output file. I was able to successfully test the `basic_hardware_test`, but further OFDM debugging was temporarily blocked by CortexLab infrastructure issues.
-
-
 
 Another important lesson was that a practical HIL framework needs a clear and consistent experiment structure. Keeping experiment-specific scripts and configuration inside a standard folder structure while the controller manages reservation, file transfer, execution, synchronization, and result collection makes it easier to add new experiments.
 
@@ -141,17 +138,20 @@ Finally, real-hardware CI is a system-integration problem rather than only a Doc
 
 The main remaining tasks are:
 
-Integrate a production CI workflow that builds and publishes the requested GNU Radio image, passes its image reference to MINUS scenario generation, runs the controller, and reports the verdict back to the originating pull request.
-Add more tests to cover all hardware-relevant blocks.
-Refine the multi-experiment mechanism to properly handle cases where a task is already running.
-Maintain a record of which tests cover particular blocks and add a mechanism to request tests by block name.
-Improve failure cleanup, retries, timeouts, and artifact-retention policies for long-running shared-hardware jobs.
+- Integrate a production CI workflow that builds and publishes the requested GNU Radio image, passes its image reference to MINUS scenario generation, runs the controller, and reports the verdict back to the originating pull request.
+- Add more tests to cover all hardware-relevant blocks.
+- Refine the multi-experiment mechanism to properly handle cases where a task is already running.
+- Maintain a record of which tests cover particular blocks and add a mechanism to request tests by block name.
+- Improve failure cleanup, retries, timeouts, and artifact-retention policies for long-running shared-hardware jobs.
+- Continue debugging and complete the OFDM payload test once the CortexLab infrastructure is stable.
 
 ## Conclusion
 
-The project has delivered the essential control path for GNU Radio HIL testing on CortexLab: one request can reserve hardware, stage a parameterized experiment, start coordinated radio programs, collect analysis artifacts, and expose a final machine-readable result. The basic hardware and OFDM experiments demonstrate that the controller supports both signal-level validation and payload-level verification.
+The project has delivered the essential control path for GNU Radio HIL testing on CortexLab: one request can reserve hardware, stage a parameterized experiment, start coordinated radio programs, collect analysis artifacts, and expose a final machine-readable result.
 
-The resulting codebase is a credible foundation for physical-hardware regression testing of GNU Radio changes. Completing CI integration and production hardening will turn that foundation into a repeatable, secure, and maintainable HIL validation service.
+The successfully validated `basic_hardware_test` demonstrates the end-to-end HIL workflow on physical CortexLab hardware. The OFDM experiment establishes the payload-level testing and analysis workflow, but its final payload verification still requires further debugging.
+
+The resulting codebase is a credible foundation for physical-hardware regression testing of GNU Radio changes. Completing CI integration, resolving the remaining OFDM issue, and adding production hardening will turn that foundation into a more repeatable, secure, and maintainable HIL validation service.
 
 ## Acknowledgements
 
