@@ -35,7 +35,7 @@ I implemented a Flask controller that starts locally on port `5678`. Its main `P
 
 This makes the state of a run inspectable rather than leaving users to infer progress from remote shell sessions. The execution identifier follows `<pr-id>-<commit-prefix>-<oar-job-id>`, enabling a hardware run to be traced back to the revision that requested it.
 
-Relevant implementation: [`flask_server.py`](flask_server.py), [`templates/dashboard.html`](templates/dashboard.html), and [`experiment_manager/generic_experiment_runner.py`](experiment_manager/generic_experiment_runner.py).
+Relevant implementation: [`flask_server.py`](flask_server.py), [`templates/dashboard.html`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/blob/main/flask_server.py), and [`experiment_manager/generic_experiment_runner.py`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/blob/main/experiment_manager/generic_experiment_runner.py).
 
 ### Reservation, task, and node lifecycle
 
@@ -43,7 +43,7 @@ The CortexLab integration submits and monitors OAR reservations and creates MINU
 
 The generic runner selects only online, non-busy nodes, verifies that enough nodes exist for the requested experiment, and marks selected nodes busy before staging. It releases them after primary node execution is complete. This avoids assigning a node already in use by another tracked run.
 
-Relevant implementation: [`cortexlab/reservation/`](cortexlab/reservation/), [`cortexlab/nodes/`](cortexlab/nodes/), and [`cortexlab/remote_connections/`](cortexlab/remote_connections/).
+Relevant implementation: [`cortexlab/reservation/`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/blob/main/cortexlab/reservation/reservation.py), [`cortexlab/nodes/`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/tree/main/cortexlab/nodes), and [`cortexlab/remote_connections/`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/tree/main/cortexlab/remote_connections).
 
 ### Reusable experiment packaging and remote deployment
 
@@ -51,7 +51,7 @@ An experiment is defined as a directory containing `node_scripts/`, `analysis.py
 
 This layout separates controller behavior from experiment-specific GNU Radio programs. Adding a new experiment does not require changing the orchestration path: the experiment author provides node scripts, parameters, and analysis logic following the same contract.
 
-Relevant implementation: [`experiment_manager/create_experiment_folder.py`](experiment_manager/create_experiment_folder.py), [`experiment_manager/upload_experiment_folder.py`](experiment_manager/upload_experiment_folder.py), and [`experiment_manager/hil_experiments/`](experiment_manager/hil_experiments/).
+Relevant implementation: [`experiment_manager/create_experiment_folder.py`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/blob/main/experiment_manager/create_experiment_folder.py), [`experiment_manager/upload_experiment_folder.py`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/blob/main/experiment_manager/upload_experiment_folder.py), and [`experiment_manager/hil_experiments/`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/tree/main/experiment_manager/hil_experiments).
 
 ### Synchronized distributed execution and result handling
 
@@ -59,7 +59,7 @@ The controller launches one thread per node script. A `threading.Barrier` and a 
 
 After every primary node finishes successfully, the controller runs `analysis.py`. Analysis is expected to produce a JSON result with `status`, `reason`, and `metrics`; a result whose status is `passed` is treated as a successful experiment. Failures from node execution, analysis, malformed result output, or insufficient nodes are recorded in the experiment registry.
 
-Relevant implementation: [`experiment_manager/start_experiment.py`](experiment_manager/start_experiment.py), [`cortexlab/execution/`](cortexlab/execution/), and [`cortexlab/execution/execute_analysis.py`](cortexlab/execution/execute_analysis.py).
+Relevant implementation: [`experiment_manager/start_experiment.py`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/blob/main/experiment_manager/start_experiment.py), [`cortexlab/execution/`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/tree/main/cortexlab/execution), and [`cortexlab/execution/execute_analysis.py`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/blob/main/cortexlab/execution/execute_analysis.py).
 
 ### HIL experiment implementations
 
@@ -70,16 +70,17 @@ Two example experiment families are included.
 
 The accompanying `.grc` flowgraphs, node scripts, analysis scripts, and `parameter.json` files make these examples useful both as smoke tests and as templates for future experiments.
 
-Relevant implementation: [`experiment_manager/hil_experiments/basic_hardware_test/`](experiment_manager/hil_experiments/basic_hardware_test/) and [`experiment_manager/hil_experiments/ofdm_hardware_test/`](experiment_manager/hil_experiments/ofdm_hardware_test/).
+Relevant implementation: [`experiment_manager/hil_experiments/basic_hardware_test/`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/tree/main/experiment_manager/hil_experiments/basic_hardware_test) and [`experiment_manager/hil_experiments/ofdm_hardware_test/`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/tree/main/experiment_manager/hil_experiments/ofdm_hardware_test).
 
-### Initial CI and image-build groundwork
+### Initial CI and GNU Radio Image Groundwork
 
-The repository now includes a Dockerfile and an image-build utility that accepts a GNU Radio commit reference, verifies the image, and can optionally push it to a registry. This is an important foundation for the project’s longer-term objective: validate a GNU Radio pull request or revision on real CortexLab radios.
+The repository includes a Dockerfile for building a CortexLab GNU Radio 3.10 environment with the required UHD, VOLK, GNU Radio, and additional GNU Radio modules. The Dockerfile is adapted from the [`CorteXlab/cxlb-docker-gnuradio-3.10`](https://github.com/CorteXlab/cxlb-docker-gnuradio-3.10/blob/master/Dockerfile) Dockerfile and extends its setup to accept a configurable GNU Radio Git reference, including a specific commit SHA. This allows an image to be built from the exact GNU Radio revision associated with a pull request.
 
-The work intentionally stops short of claiming complete CI integration. No checked-in CI workflow currently builds an image, passes it through the experiment request to MINUS, runs a HIL experiment, and reports the result back to a pull request. The current scenario path still uses the configured default image at run time.
+This work intentionally stops short of claiming complete CI integration. No checked-in CI workflow currently builds and publishes an image from a PR SHA, passes the resulting image reference through the experiment request to MINUS, runs a HIL experiment, and reports the result back to the originating pull request. The current scenario path still uses the configured default image at run time.
 
-Relevant implementation: [`ci_workflow/build_gnuradio_image.py`](ci_workflow/build_gnuradio_image.py) and [`ci_workflow/docker_image/Dockerfile.pr`](ci_workflow/docker_image/Dockerfile.pr).
+Relevant implementation: [`ci_workflow/docker_image/Dockerfile.pr`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/blob/main/ci_workflow/docker_image/Dockerfile.pr).
 
+**Acknowledgement:** The base Dockerfile and CortexLab GNU Radio container setup were adapted from the [CorteXlab/cxlb-docker-gnuradio-3.10](https://github.com/CorteXlab/cxlb-docker-gnuradio-3.10) project.
 ## Architecture
 
 ```text
