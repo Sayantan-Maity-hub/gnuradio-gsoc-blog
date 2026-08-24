@@ -155,6 +155,6 @@ The resulting codebase is a credible foundation for physical-hardware regression
 
 ## Acknowledgements
 
-Before starting this project, I only had a basic understanding of Python. I would like to sincerely thank my mentors, Marcus Müller and Cyrille Morin, for their continuous guidance and support throughout the project. With their help, I learned and worked with GNU Radio, CortexLab, Flask, Paramiko, Docker, and Docker image building, and gained a much deeper understanding of hardware-in-the-loop testing and CI.
+Before starting this project, I only had a basic understanding of Python. I would like to sincerely thank my mentors Cyrille Morin and Marcus Müller for their continuous guidance and support throughout the project. With their help, I learned and worked with GNU Radio, CortexLab, Flask, Paramiko, Docker, and Docker image building, and gained a much deeper understanding of hardware-in-the-loop testing and CI.
 
 I am also grateful to the CortexLab operators for providing the infrastructure and support needed to run the hardware experiments, and to the GNU Radio community for their guidance, feedback, and valuable resources throughout the project.
