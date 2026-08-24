@@ -118,15 +118,24 @@ Notable milestones include:
 
 ## Testing and Validation
 
-The repository contains local tests covering reservation parsing, scenario generation, registry behavior, Flask status handling, experiment-folder creation, and experiment-directory structure. A fresh `pytest -q` invocation during final-report preparation did not complete collection because several tests use stale import paths (for example, `cortexlab.flask_server` and a top-level `create_experiment_folder`) that do not match the current repository layout. Setting the repository root on `PYTHONPATH` resolves some package imports but leaves those stale paths unresolved.
+The `basic_hardware_test` has been successfully tested end-to-end on CortexLab. The test covers hardware reservation, scenario generation, experiment execution, and result collection, and it completed successfully.
 
-This is a packaging/test-maintenance issue, not evidence that the physical HIL workflow passed or failed. The README also correctly distinguishes local automated tests from end-to-end hardware validation. A next step should be to repair the test imports, add deterministic unit tests around the execution state machine and result parser, and run a documented end-to-end CortexLab smoke test for both example experiments.
+The OFDM test has also been executed on the hardware. Currently, there are no significant errors reported in the execution logs, but the expected message is still not being written to the output file. I started debugging the issue step by step, but due to the current CortexLab infrastructure issues, I could not continue the debugging further.
+
+Therefore, the `basic_hardware_test` is confirmed to be working successfully, while the OFDM test requires further debugging once the CortexLab issues are resolved. The next step is to continue investigating the OFDM RX/data path and verify why the received message is not being written to the output file.
+
 
 ## Challenges and Lessons Learned
 
-The core difficulty was orchestration across shared, remote hardware: reservation state is asynchronous, assigned nodes may not yet be usable, transfer and execution occur through a gateway, and transmitter/receiver timing matters. The solution treats state as a first-class concern through reservation, node, and execution registries; background monitors; explicit state transitions; and synchronized start coordination.
+The main challenges were related to coordinating experiments across shared, remote CortexLab hardware. Reservation is asynchronous, so a submitted job does not immediately mean that the assigned nodes are ready for execution. I also faced issues with node connectivity through the gateway, file transfer, experiment execution, reservation monitoring, and synchronization between transmitter and receiver nodes. These issues highlighted the importance of handling reservation, node, and execution states explicitly and monitoring them throughout the experiment lifecycle.
 
-Another lesson is that a useful HIL framework needs a clear experiment contract. Keeping experiment-specific code in a standard folder structure while the controller handles allocation, transfer, start, and collection makes the framework practical to extend. Finally, real-hardware CI is a system integration problem, not merely a Docker build problem: image naming, registry access, MINUS image selection, secrets, hardware availability, cleanup, and PR reporting all need an integrated design.
+During development, I also encountered several integration and debugging issues, including Python import and packaging problems, Flask/controller endpoint issues, reservation-state handling, remote SSH connections, and MINUS task submission. Debugging the OFDM experiment was particularly challenging because the TX/RX flowgraph could execute without producing obvious runtime errors, while the expected received message was still missing from the output file. I was able to successfully test the `basic_hardware_test`, but further OFDM debugging was temporarily blocked by CortexLab infrastructure issues.
+
+
+
+Another important lesson was that a practical HIL framework needs a clear and consistent experiment structure. Keeping experiment-specific scripts and configuration inside a standard folder structure while the controller manages reservation, file transfer, execution, synchronization, and result collection makes it easier to add new experiments.
+
+Finally, real-hardware CI is a system-integration problem rather than only a Docker or CI workflow problem. The complete system must account for the GNU Radio version being tested, Docker image creation and publishing, MINUS scenario generation, CortexLab hardware availability, authentication and secrets, reservation and cleanup, experiment results, and reporting the final status back to the originating pull request.
 
 ## Remaining Work
 
@@ -146,4 +155,6 @@ The resulting codebase is a credible foundation for physical-hardware regression
 
 ## Acknowledgements
 
-Thank you to my mentors, Marcus Müller and Cyrille Morin, the CortexLab operators, and the GNU Radio community for their guidance, support, and infrastructure.
+Before starting this project, I only had a basic understanding of Python. I would like to sincerely thank my mentors, Marcus Müller and Cyrille Morin, for their continuous guidance and support throughout the project. With their help, I learned and worked with GNU Radio, CortexLab, Flask, Paramiko, Docker, and Docker image building, and gained a much deeper understanding of hardware-in-the-loop testing and CI.
+
+I am also grateful to the CortexLab operators for providing the infrastructure and support needed to run the hardware experiments, and to the GNU Radio community for their guidance, feedback, and valuable resources throughout the project.
