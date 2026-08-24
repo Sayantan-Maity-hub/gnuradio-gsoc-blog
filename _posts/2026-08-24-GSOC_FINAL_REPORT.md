@@ -35,7 +35,7 @@ I implemented a Flask controller that starts locally on port `5678`. Its main `P
 
 This makes the state of a run inspectable rather than leaving users to infer progress from remote shell sessions. The execution identifier follows `<pr-id>-<commit-prefix>-<oar-job-id>`, enabling a hardware run to be traced back to the revision that requested it.
 
-Relevant implementation: [`flask_server.py`](flask_server.py), [`templates/dashboard.html`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/blob/main/flask_server.py), and [`experiment_manager/generic_experiment_runner.py`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/blob/main/experiment_manager/generic_experiment_runner.py).
+Relevant implementation: [`flask_server.py`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/blob/main/flask_server.py), [`templates/dashboard.html`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/blob/main/templates/dashboard.html), and [`experiment_manager/generic_experiment_runner.py`](https://github.com/Sayantan-Maity-hub/gnuradio-hardware-in-loop/blob/main/experiment_manager/generic_experiment_runner.py).
 
 ### Reservation, task, and node lifecycle
 
