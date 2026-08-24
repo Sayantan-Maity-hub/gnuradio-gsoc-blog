@@ -1,7 +1,9 @@
 # GSoC Final Report: GNU Radio Hardware-in-the-Loop Controller for CortexLab
 
 **Contributor:** [Sayantan Maity]
+
 **EMail:** [maitysayantan116@gmail.com]
+
 **Organization:** [GNU Radio]   
 **Mentor(s):** [Marcus Müller, Cyrille Morin]  
 **Project period:** June-August 2026  
